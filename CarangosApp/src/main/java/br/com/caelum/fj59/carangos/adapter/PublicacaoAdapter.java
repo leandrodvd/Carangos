@@ -17,6 +17,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import br.com.caelum.fj59.carangos.R;
+import br.com.caelum.fj59.carangos.infra.MyLog;
 import br.com.caelum.fj59.carangos.modelo.Publicacao;
 
 /**
@@ -50,24 +51,37 @@ public class PublicacaoAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup viewGroup) {
         Publicacao publicacao = (Publicacao) getItem(position);
 
-        View linha = LayoutInflater.from(context).inflate(R.layout.
-                publicacao_linha_par, viewGroup, false);
+        ViewHolder holder;
+        int layout = position%2 ==0 ? R.layout.publicacao_linha_par : R.layout.publicacao_linha_impar;
 
-        ImageView foto = (ImageView) linha.findViewById(R.id.foto);
-        TextView mensagem = (TextView) linha.findViewById(R.id.mensagem);
-        TextView nomeAutor = (TextView) linha.findViewById(R.id.nome_autor);
-        ImageView emoticon = (ImageView) linha.findViewById(R.id.emoticon);
-        ProgressBar progress = (ProgressBar) linha.findViewById(R.id.progress);
+        if(convertView == null){
+            convertView = LayoutInflater.from(context).inflate(layout,viewGroup,false);
+            holder =  new ViewHolder(convertView);
+            convertView.setTag(holder);
 
-        mensagem.setText(publicacao.getMensagem());
-        nomeAutor.setText(publicacao.getAutor().getNome());
+            MyLog.i("CRIOU UMA NOVA LINHA!!");
+        }
+        else{
+            holder = (ViewHolder) convertView.getTag();
+            MyLog.i("APROVEITOU A LINHA");
+        }
+
+
+//        ImageView foto = (ImageView) linha.findViewById(R.id.foto);
+//        TextView mensagem = (TextView) linha.findViewById(R.id.mensagem);
+//        TextView nomeAutor = (TextView) linha.findViewById(R.id.nome_autor);
+//        ImageView emoticon = (ImageView) linha.findViewById(R.id.emoticon);
+//        ProgressBar progress = (ProgressBar) linha.findViewById(R.id.progress);
+
+        holder.mensagem.setText(publicacao.getMensagem());
+        holder.nomeAutor.setText(publicacao.getAutor().getNome());
 
         //foto.setImageDrawable(this.context.getResources().getDrawable(R.drawable.ic_car));
-        progress.setVisibility(View.VISIBLE);
+        holder.progress.setVisibility(View.VISIBLE);
         Picasso.with(this.context)
                 .load(publicacao.getFoto())
                 .fit()
-                .into(foto,new VerificadorDeRetorno(new ViewHolder(linha)));
+                .into(holder.foto,new VerificadorDeRetorno(new ViewHolder(convertView)));
 
 
         int idImagem = 0;
@@ -77,9 +91,9 @@ public class PublicacaoAdapter extends BaseAdapter {
             case TRISTE: idImagem = R.drawable.ic_indiferente; break;
         }
 
-        emoticon.setImageDrawable(this.context.getResources().getDrawable(idImagem));
+        holder.emoticon.setImageDrawable(this.context.getResources().getDrawable(idImagem));
 
-        return linha;
+        return convertView;
     }
 
     @Override
