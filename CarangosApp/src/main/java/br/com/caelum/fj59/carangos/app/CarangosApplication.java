@@ -7,12 +7,19 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
+import br.com.caelum.fj59.carangos.modelo.Publicacao;
+
 /**
  * Created by android5628 on 18/01/16.
  */
 public class CarangosApplication extends Application {
 
     private List<AsyncTask<?,?,?>> tasks = new ArrayList<AsyncTask<?,?,?>>();
+    List<Publicacao> publicacoes = new ArrayList<Publicacao>();
+
+    public List<Publicacao> getPublicacoes(){
+        return publicacoes;
+    }
 
     public void registra(AsyncTask<?,?,?> task){
         Log.i("TASK_MANAGER","Registra task");

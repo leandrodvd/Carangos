@@ -3,10 +3,13 @@ package br.com.caelum.fj59.carangos.tasks;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.List;
 
 import br.com.caelum.fj59.carangos.activity.MainActivity;
+import br.com.caelum.fj59.carangos.app.CarangosApplication;
 import br.com.caelum.fj59.carangos.converter.PublicacaoConverter;
+import br.com.caelum.fj59.carangos.evento.EventoPublicacoesRecebidas;
 import br.com.caelum.fj59.carangos.infra.MyLog;
 import br.com.caelum.fj59.carangos.modelo.Publicacao;
 import br.com.caelum.fj59.carangos.webservice.Pagina;
@@ -17,13 +20,15 @@ import br.com.caelum.fj59.carangos.webservice.WebClient;
  */
 public class BuscaMaisPublicacoesTask extends AsyncTask<Pagina, Void, List<Publicacao>> {
 
+    private CarangosApplication application;
+
     private Exception erro;
    // private MainActivity activity;
     private BuscaMaisPublicacoesDelegate delegate;
 
-    public BuscaMaisPublicacoesTask(BuscaMaisPublicacoesDelegate delegate) {
-        this.delegate = delegate;
-        this.delegate.getCarangosApplication().registra(this);
+    public BuscaMaisPublicacoesTask(CarangosApplication application) {
+        this.application = application;
+        this.application.registra(this);
     }
 
 
@@ -49,12 +54,11 @@ public class BuscaMaisPublicacoesTask extends AsyncTask<Pagina, Void, List<Publi
         MyLog.i("RETORNO OBTIDO!" + retorno);
 
         if (retorno!=null) {
-            this.delegate.lidaComRetorno(retorno);
+            EventoPublicacoesRecebidas.notifica(this.application,(Serializable) retorno,true);
         } else {
-            this.delegate.lidaComErro(erro);
-            //Toast.makeText(this.activity, "Erro na busca dos dados", Toast.LENGTH_SHORT).show();
+            EventoPublicacoesRecebidas.notifica(this.application,erro,false);
         }
-        this.delegate.getCarangosApplication().desregistra(this);
+        this.application.desregistra(this);
     }
 
 
