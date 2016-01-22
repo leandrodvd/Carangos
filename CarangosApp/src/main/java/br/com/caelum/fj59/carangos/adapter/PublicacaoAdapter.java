@@ -137,6 +137,6 @@ class VerificadorDeRetorno implements Callback {
 
     @Override
     public void onSuccess() {
-
+        holder.progress.setVisibility(View.GONE);
     }
 }
